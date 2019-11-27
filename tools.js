@@ -1,4 +1,34 @@
 /**
+ * 1
+ * @method  trim    清楚字符串左右空白字符
+ * @param   {string}    [str]   待处理的字符串
+ * @param   {string}    [type]  处理类型
+ * @return  {string}  返回处理好的字符串
+ */
+function trim (str, type = 'all') {
+    const regexp = {
+        left: /(^\s*)/g,
+        all: /(^\s*)|(\s$)/g,
+        right: /(\s$)/g
+    }
+    return str.replace(regexp[type], '')
+}
+/**
+ * 对String对象进行扩展，清除字符串左右空白字符
+ */
+function stringExtendTrim () {
+    String.prototype.trim = function (type = 'all') {
+        const regexp = {
+            left: /(^\s*)/g,
+            all: /(^\s*)|(\s$)/g,
+            right: /(\s$)/g
+        }
+        return this.replace(regexp[type], '')
+    }
+}
+
+/**
+ * 2
  * 提取字符串中的a标签
  * @param   {string}    [str]   str
  * @readonly    {object}    [{source:'',url:'',text:''}]
