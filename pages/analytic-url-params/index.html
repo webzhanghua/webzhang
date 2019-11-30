@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>解析url</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <style>
+        .list {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            display: flex;
+        }
+
+        .list span {
+            display: block;
+            width: 100px;
+            border: 1px solid #ccc;
+            text-align: left;
+            flex: 1;
+        }
+
+        .list .index {
+            width: 50px;
+            flex: 0 0 auto;
+        }
+
+        .list.active {
+            background: rgba(0, 180, 160, .5)
+        }
+
+        .urldata {
+            width: 80%;
+            height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <script id="dotTemp" type="text/x-dot-template">
+        {{for(var i=0;i<it.length;i++){}}
+            <div class="list"  onclick="selected(this)">
+                <span class="index">{{=i}}</span><span class="left">{{=it[i].key}}</span><span class="right">{{=it[i].value}}</span>
+            </div>
+        
+        {{}}}
+    </script>
+    <textarea name="" id="" cols="30" rows="10" class="urldata"></textarea>
+    <button onclick="clearFun()">清空</button>
+    <button onclick="getUrlData()">确定</button>
+    <div class="main">
+        <div class="ul">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../common/js/jquery.js"></script>
+<script type="text/javascript" src="../common/js/doT.min.js"></script>
+<script>
+    /**
+     * 将url参数转换为对象
+     * @param {string}  [url]   url地址信息
+     * @returns {object}
+     */
+    function parseQueryString(url) {
+        let reg_url = /^[^\?]+\?([\w\W]+)$/,
+            reg_para = /([^&=]+)=([\w\W]*?)(&|$|#)/g,
+            arr_url = reg_url.exec(url),
+            ret = [];
+
+        if (arr_url && arr_url[1]) {
+            var str_para = arr_url[1], result;
+            while ((result = reg_para.exec(str_para)) != null) {
+                ret.push({
+                    key: result[1],
+                    value: result[2]
+                })
+            }
+        }
+        return ret
+    };
+
+    // 获取url数据
+    function getUrlData() {
+        let url = $(".urldata").val();
+        let urlParam = [];
+        if (url) {
+            urlParam = parseQueryString(url)
+            console.log(urlParam)
+        }
+
+        let dotText = doT.template($("#dotTemp").text());
+        $(".ul").html(dotText(urlParam));
+    }
+    // 清空
+    function clearFun() {
+        $(".urldata").val("")
+    }
+    function selected(obj) {
+        $(".list").removeClass("active")
+        $(obj).addClass("active")
+
+    }
+</script>
+
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>两个对象比较差异</title>
+    <style>
+        .list {
+            width: 100%;
+            height: 30px;
+            line-height: 30px;
+            display: flex;
+        }
+
+        .list span {
+            display: block;
+            width: 100px;
+            border: 1px solid #ccc;
+            text-align: left;
+            flex: 1;
+        }
+
+        .list .index {
+            width: 50px;
+            flex: 0 0 auto;
+        }
+
+        .list.active {
+            background: rgba(0, 180, 160, .5)
+        }
+
+        .urldata {
+            width: 80%;
+            height: 100px;
+        }
+
+        .view-ui {
+            width: 100%;
+            font-size: 0;
+            padding: 0;
+        }
+
+        .view-li {
+            width: 50%;
+            display: inline-block;
+            font-size: 20px;
+        }
+
+        .view-li h4 {
+            padding: 0;
+            margin: 0 0 10px 0;
+        }
+
+        .view-li button {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .view-li textarea {
+            width: 80%;
+        }
+    </style>
+</head>
+
+<body>
+    <script id="dotTemp" type="text/x-dot-template">
+        {{for(var i=0;i<it.length;i++){}}
+            <div class="list"  onclick="selected(this)">
+                <span class="index">{{=i}}</span>
+                <span class="left">{{=it[i].key}}</span>
+                <span class="right">{{=it[i].value1}}</span>
+                <span class="right">{{=it[i].value2}}</span>
+                <span class="right">{{=it[i].isEqual}}</span>
+            </div>
+        {{}}}
+    </script>
+    <ul class="view-ui">
+        <li class="view-li">
+            <h4>数据一</h4>
+            <button onclick="clearFun(1)">清空</button>
+            <textarea name="" id="obj1" cols="30" rows="10"></textarea>
+        </li>
+        <li class="view-li">
+            <h4>数据二</h4>
+            <button onclick="clearFun(2)">清空</button>
+            <textarea name="" id="obj2" cols="30" rows="10"></textarea>
+        </li>
+    </ul>
+    <button onclick="comparisonFun(false)">严格比对数据</button>
+    <button onclick="comparisonFun(true)">模糊比对数据</button>
+    <p>
+        模糊比对说明：模糊比对是把引用类型的数据转换为字符串进行比对，结果有可能不准，需要对该属性单独比较
+    </p>
+    <p>打开控制台，看详细对数据对比结果</p>
+    <div class="main">
+        <div class="ul">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../common/js/jquery.js"></script>
+<script type="text/javascript" src="../common/js/doT.min.js"></script>
+<script>
+    /**
+     * 将json字符串转化为对象
+     * @param   {string}    [str]   json字符串
+     */
+    function jsonToObject(str) {
+        if (!str) {
+            console.log('不是一个有效对json数据')
+            return
+        }
+        try {
+            return eval('(' + str + ')');
+        } catch{
+            console.log('数据异常,不是一个有效对json数据')
+        }
+    }
+    /**
+     * 数据对比，两个数据是否相等
+     * @param   {*} [item1] 对比数据一
+     * @param   {*} [item2] 对比数据二
+     * @param   {*} [flag] 是否进行字符串对比
+     * @returns {boolean}   是否相同
+     */
+    function dataComparison(item1, item2, flag) {
+        let isEqual = false
+        if (typeof item1 === typeof item2) {
+            if ((item1 === item2)
+                || (flag
+                    && item1
+                    && item1.toString() === item2.toString())) {
+                isEqual = true
+            }
+            // } else {
+            //     if (flag && item1 == item2) {
+            //         isEqual = true
+            //     }
+        }
+        return isEqual
+    }
+    /**
+     * 对象对比，两个对象是否相等
+     * @param   {*} [item1] 对比数据一
+     * @param   {*} [item2] 对比数据二
+     * @param   {*} [flag] 是否进行字符串对比
+     * @returns {array}}   返回一个整理完的数组
+     */
+    function objectComparison(obj1, obj2, flag) {
+        if (!obj1
+            || !obj2
+            || !obj1 instanceof Object
+            || !obj2 instanceof Object) {
+            console.log('obj1或obj2不是对象类型')
+            return
+        }
+        let key1s = Object.keys(obj1)
+        let key2s = Object.keys(obj2)
+        let keys = [...new Set(key1s.concat(key2s))]
+        let common = []
+        let diff = []
+        keys.forEach((item) => {
+            let isEqual = dataComparison(obj1[item], obj2[item], flag)
+            let content = {
+                key: item,
+                value1: obj1[item],
+                value2: obj2[item],
+                isEqual: isEqual,
+            }
+            if (isEqual) {
+                common.push(content)
+            } else {
+                diff.push(content)
+            }
+        })
+        return common.concat(diff)
+    }
+
+    // 操作代码
+    // 比对数据
+    function comparisonFun(flag) {
+        let obj1 = jsonToObject($("#obj1").val()) || {}
+        let obj2 = jsonToObject($("#obj2").val()) || {}
+        let params = objectComparison(obj1, obj2, flag)
+        let dotText = doT.template($("#dotTemp").text());
+        $(".ul").html(dotText(params));
+        console.log('对比之后对数据')
+        console.log(params)
+        console.log('输出完成')
+    }
+    // 清空
+    function clearFun(num) {
+        $("#obj" + num).val("")
+    }
+    // 点击数据显示的状态
+    function selected(obj) {
+        $(".list").removeClass("active")
+        $(obj).addClass("active")
+    }
+</script>
+
+</html>

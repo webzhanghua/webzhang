@@ -1,3 +1,4 @@
+// 对字符串进行操作
 /**
  * 1
  * @method  trim    清楚字符串左右空白字符
@@ -49,3 +50,40 @@ function extractTagsA (str) {
     })
     return newLabel
 }
+
+/**
+ * 3
+ * 将json字符串转化为对象
+ * @param   {string}    [str]   json字符串
+ */
+function jsonToObject (str) {
+    if (!str) {
+        console.log('不是一个有效对json数据')
+        return
+    }
+    return eval('(' + str + ')');
+}
+
+/**
+ * 4
+ * 将url参数转换为对象
+ * @param {string}  [url]   url地址信息
+ * @returns {object}
+ */
+function parseQueryString (url) {
+    let reg_url = /^[^\?]+\?([\w\W]+)$/,
+        reg_para = /([^&=]+)=([\w\W]*?)(&|$|#)/g,
+        arr_url = reg_url.exec(url),
+        ret = [];
+
+    if (arr_url && arr_url[1]) {
+        var str_para = arr_url[1], result;
+        while ((result = reg_para.exec(str_para)) != null) {
+            ret.push({
+                key: result[1],
+                value: result[2]
+            })
+        }
+    }
+    return ret
+};
