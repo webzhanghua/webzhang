@@ -8,18 +8,36 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
+        .ul {
+            border: 1px solid #ccc;
+        }
+
         .list {
             width: 100%;
             height: 30px;
             line-height: 30px;
             display: flex;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .list:last-child {
+            border: none;
+        }
+
+        .list:nth-child(2n) {
+            background: #f5f5f5;
         }
 
         .list span {
             display: block;
             width: 100px;
-            border: 1px solid #ccc;
             text-align: left;
+            padding-left: 5px;
+            overflow: auto;
+            /* flex: 1; */
+        }
+
+        .list .right {
             flex: 1;
         }
 
@@ -28,13 +46,48 @@
             flex: 0 0 auto;
         }
 
+        .list .left {
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+        }
+
         .list.active {
             background: rgba(0, 180, 160, .5)
         }
 
-        .urldata {
-            width: 80%;
+        .url-frame {
+            width: 100%;
+            height: 120px;
+        }
+
+        .url-left {
+            width: 70%;
             height: 100px;
+            float: left;
+        }
+
+        .url-right {
+            width: 25%;
+            height: 100px;
+            float: right;
+        }
+
+        .urldata {
+            width: 100%;
+            height: 100px;
+        }
+
+        .url-btn {
+            width: 150px;
+            height: 32px;
+            margin-bottom: 10px;
+            background: #28a745;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 32px;
+            text-align: center;
         }
     </style>
 </head>
@@ -43,21 +96,28 @@
     <script id="dotTemp" type="text/x-dot-template">
         {{for(var i=0;i<it.length;i++){}}
             <div class="list"  onclick="selected(this)">
-                <span class="index">{{=i}}</span><span class="left">{{=it[i].key}}</span><span class="right">{{=it[i].value}}</span>
+                <span class="index">{{=i===0?'序号':i}}</span><span class="left">{{=it[i].key}}</span><span class="right">{{=it[i].value}}</span>
             </div>
         
         {{}}}
     </script>
-    <textarea name="" id="" cols="30" rows="10" class="urldata"></textarea>
-    <button onclick="clearFun()">清空</button>
-    <button onclick="getUrlData()">确定</button>
+    <h4>将url的参数提取出来进行展示</h4>
+    <div class="url-frame">
+        <div class="url-left">
+            <textarea name="" id="" cols="30" rows="10" class="urldata"></textarea>
+        </div>
+        <div class="url-right">
+            <div class="url-btn" onclick="clearFun()">清空</div>
+            <div class="url-btn" onclick="getUrlData()">解析url</div>
+        </div>
+    </div>
     <div class="main">
         <div class="ul">
         </div>
     </div>
 </body>
-<script type="text/javascript" src="../common/js/jquery.js"></script>
-<script type="text/javascript" src="../common/js/doT.min.js"></script>
+<script type="text/javascript" src="./js/jquery.js"></script>
+<script type="text/javascript" src="./js/doT.min.js"></script>
 <script>
     /**
      * 将url参数转换为对象
@@ -90,7 +150,7 @@
             urlParam = parseQueryString(url)
             console.log(urlParam)
         }
-
+        urlParam.unshift({ key: 'key值', value: 'value值' })
         let dotText = doT.template($("#dotTemp").text());
         $(".ul").html(dotText(urlParam));
     }
