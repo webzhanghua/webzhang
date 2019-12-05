@@ -1,7 +1,7 @@
 // 对字符串进行操作
 /**
  * 1
- * @method  trim    清楚字符串左右空白字符
+ * @method  trim    清除字符串左右空白字符
  * @param   {string}    [str]   待处理的字符串
  * @param   {string}    [type]  处理类型
  * @return  {string}  返回处理好的字符串

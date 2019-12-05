@@ -1,0 +1,13 @@
+{
+    "pluginName": "parsingURLParameters",
+    "description": "解析URL地址中的参数",
+    "main": "./index.html",
+    "version": "0.0.1",
+    "author": "webzhang",
+    "logo": "./logo.png",
+    "features": [{
+        "code": "url",
+        "explain": "解析URL地址中的参数",
+        "cmds": ["url", "url解析", "urlToParam"]
+    }]
+}
